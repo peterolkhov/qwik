@@ -1,0 +1,114 @@
+name: ui50 Qwik GET submitter BEFORE
+on:
+  push:
+    branches: [codex/diagnose-get-form-submitter]
+permissions:
+  contents: read
+jobs:
+  before:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: upstream
+        shell: bash
+    env:
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          repository: QwikDev/qwik
+          ref: d7ec29baab92f77c552322603724f7b960b11e5a
+          path: upstream
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install guarded public fixtures and snapshot whole upstream
+        run: |
+          python3 - <<'PY_ASSETS'
+          import base64,hashlib
+          from pathlib import Path
+          path=Path('e2e/qwik-e2e/apps/qwikrouter-test/src/routes/ui50-get-submit/index.tsx')
+          assert not path.exists()
+          path.parent.mkdir(parents=True,exist_ok=True)
+          data=base64.b64decode('aW1wb3J0IHsgY29tcG9uZW50JCB9IGZyb20gJ0Bxd2lrLmRldi9jb3JlJzsKaW1wb3J0IHsgRm9ybSwgcm91dGVMb2FkZXIkLCB1c2VMb2NhdGlvbiB9IGZyb20gJ0Bxd2lrLmRldi9yb3V0ZXInOwoKZXhwb3J0IGNvbnN0IHVzZVJlcG9ydHMgPSByb3V0ZUxvYWRlciQoKHsgdXJsIH0pID0+IHsKICBjb25zdCByZXBvcnRzID0gWwogICAgeyB0aXRsZTogJ1JlbGVhc2UgY2hlY2tsaXN0Jywgc3RhdHVzOiAnb3BlbicgfSwKICAgIHsgdGl0bGU6ICdBcmNoaXZlZCByZWxlYXNlIG5vdGVzJywgc3RhdHVzOiAnY2xvc2VkJyB9LAogIF07CiAgcmV0dXJuIHJlcG9ydHMuZmlsdGVyKChyZXBvcnQpID0+CiAgICByZXBvcnQudGl0bGUudG9Mb3dlckNhc2UoKS5pbmNsdWRlcyh1cmwuc2VhcmNoUGFyYW1zLmdldCgncScpID8/ICcnKSAmJgogICAgKHVybC5zZWFyY2hQYXJhbXMuZ2V0KCdzY29wZScpICE9PSAnb3BlbicgfHwgcmVwb3J0LnN0YXR1cyA9PT0gJ29wZW4nKQogICk7Cn0pOwoKZXhwb3J0IGRlZmF1bHQgY29tcG9uZW50JCgoKSA9PiB7CiAgY29uc3QgbG9jYXRpb24gPSB1c2VMb2NhdGlvbigpOwogIGNvbnN0IHJlcG9ydHMgPSB1c2VSZXBvcnRzKCk7CiAgcmV0dXJuICgKICAgIDw+CiAgICAgIDxoMT5SZXBvcnQgc2VhcmNoPC9oMT4KICAgICAgPG91dHB1dCBpZD0ibmF2aWdhdGluZyI+e1N0cmluZyhsb2NhdGlvbi5pc05hdmlnYXRpbmcpfTwvb3V0cHV0PgogICAgICA8b3V0cHV0IGlkPSJzaG93biI+CiAgICAgICAge2BxPSR7bG9jYXRpb24udXJsLnNlYXJjaFBhcmFtcy5nZXQoJ3EnKSA/PyAnJ307c2NvcGU9JHtsb2NhdGlvbi51cmwuc2VhcmNoUGFyYW1zLmdldCgnc2NvcGUnKSA/PyAnJ31gfQogICAgICA8L291dHB1dD4KICAgICAgPHVsIGlkPSJyZXBvcnRzIj57cmVwb3J0cy52YWx1ZS5tYXAoKHJlcG9ydCkgPT4gPGxpIGtleT17cmVwb3J0LnRpdGxlfT57cmVwb3J0LnRpdGxlfTwvbGk+KX08L3VsPgogICAgICA8Zm9ybSBpZD0ibmF0aXZlIiBtZXRob2Q9ImdldCI+CiAgICAgICAgPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0icSIgdmFsdWU9InJlbGVhc2UiIC8+CiAgICAgICAgPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0idGFnIiB2YWx1ZT0iYSIgLz4KICAgICAgICA8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJ0YWciIHZhbHVlPSJiIiAvPgogICAgICAgIDxidXR0b24gaWQ9Im5hdGl2ZS1vcGVuIiB0eXBlPSJzdWJtaXQiIG5hbWU9InNjb3BlIiB2YWx1ZT0ib3BlbiI+T3BlbiByZXBvcnRzPC9idXR0b24+CiAgICAgIDwvZm9ybT4KICAgICAgPEZvcm0gaWQ9ImVuaGFuY2VkIj4KICAgICAgICA8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJxIiB2YWx1ZT0icmVsZWFzZSIgLz4KICAgICAgICA8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJ0YWciIHZhbHVlPSJhIiAvPgogICAgICAgIDxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9InRhZyIgdmFsdWU9ImIiIC8+CiAgICAgICAgPGJ1dHRvbiBpZD0iZW5oYW5jZWQtb3BlbiIgdHlwZT0ic3VibWl0IiBuYW1lPSJzY29wZSIgdmFsdWU9Im9wZW4iPk9wZW4gcmVwb3J0czwvYnV0dG9uPgogICAgICAgIDxidXR0b24gaWQ9ImVuaGFuY2VkLWFsbCIgdHlwZT0ic3VibWl0Ij5BbGwgcmVwb3J0czwvYnV0dG9uPgogICAgICA8L0Zvcm0+CiAgICAgIDxGb3JtIGlkPSJoaWRkZW4iPgogICAgICAgIDxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9InEiIHZhbHVlPSJyZWxlYXNlIiAvPgogICAgICAgIDxpbnB1dCB0eXBlPSJoaWRkZW4iIG5hbWU9InRhZyIgdmFsdWU9ImEiIC8+CiAgICAgICAgPGlucHV0IHR5cGU9ImhpZGRlbiIgbmFtZT0idGFnIiB2YWx1ZT0iYiIgLz4KICAgICAgICA8aW5wdXQgdHlwZT0iaGlkZGVuIiBuYW1lPSJzY29wZSIgdmFsdWU9Im9wZW4iIC8+CiAgICAgICAgPGJ1dHRvbiBpZD0iaGlkZGVuLW9wZW4iIHR5cGU9InN1Ym1pdCI+T3BlbiByZXBvcnRzPC9idXR0b24+CiAgICAgIDwvRm9ybT4KICAgIDwvPgogICk7Cn0pOwo=')
+          assert hashlib.sha256(data).hexdigest()=='9811aba15481a40b8777c8b6c180a80d01c7fa4036c9c37aefd4614de88e4294'
+          path.write_bytes(data)
+          path=Path('e2e/qwik-e2e/tests/qwikrouter/ui50-get-submit.e2e.ts')
+          assert not path.exists()
+          path.parent.mkdir(parents=True,exist_ok=True)
+          data=base64.b64decode('aW1wb3J0IHsgZXhwZWN0LCB0ZXN0IH0gZnJvbSAnQHBsYXl3cmlnaHQvdGVzdCc7Cgpjb25zdCBjYXNlcyA9IFsKICB7IG5hbWU6ICdjb250cm9sIG5hdGl2ZSBuYW1lZCBjbGljaycsIGJ1dHRvbjogJ25hdGl2ZS1vcGVuJywgc2NvcGU6ICdvcGVuJywgcmVxdWVzdDogZmFsc2UgfSwKICB7IG5hbWU6ICdjb250cm9sIG5hdGl2ZSBuYW1lZCByZXF1ZXN0U3VibWl0JywgYnV0dG9uOiAnbmF0aXZlLW9wZW4nLCBzY29wZTogJ29wZW4nLCByZXF1ZXN0OiB0cnVlIH0sCiAgeyBuYW1lOiAnYnVnIGVuaGFuY2VkIG5hbWVkIGNsaWNrJywgYnV0dG9uOiAnZW5oYW5jZWQtb3BlbicsIHNjb3BlOiAnb3BlbicsIHJlcXVlc3Q6IGZhbHNlIH0sCiAgeyBuYW1lOiAnYnVnIGVuaGFuY2VkIG5hbWVkIHJlcXVlc3RTdWJtaXQnLCBidXR0b246ICdlbmhhbmNlZC1vcGVuJywgc2NvcGU6ICdvcGVuJywgcmVxdWVzdDogdHJ1ZSB9LAogIHsgbmFtZTogJ2NvbnRyb2wgZW5oYW5jZWQgdW5uYW1lZCBjbGljaycsIGJ1dHRvbjogJ2VuaGFuY2VkLWFsbCcsIHNjb3BlOiAnJywgcmVxdWVzdDogZmFsc2UgfSwKICB7IG5hbWU6ICdjb250cm9sIGVuaGFuY2VkIGhpZGRlbiBzY29wZScsIGJ1dHRvbjogJ2hpZGRlbi1vcGVuJywgc2NvcGU6ICdvcGVuJywgcmVxdWVzdDogZmFsc2UgfSwKXTsKCmZvciAoY29uc3QgZml4dHVyZSBvZiBjYXNlcykgewogIHRlc3QoZml4dHVyZS5uYW1lLCBhc3luYyAoeyBwYWdlIH0pID0+IHsKICAgIGF3YWl0IHBhZ2UuZ290bygnaHR0cDovL2xvY2FsaG9zdDozMzAxL3F3aWtyb3V0ZXItdGVzdC91aTUwLWdldC1zdWJtaXQvJyk7CiAgICBhd2FpdCBleHBlY3QocGFnZS5sb2NhdG9yKCdoMScpKS50b0hhdmVUZXh0KCdSZXBvcnQgc2VhcmNoJyk7CiAgICBhd2FpdCBwYWdlLndhaXRGb3JGdW5jdGlvbigoKSA9PiBCb29sZWFuKCh3aW5kb3cgYXMgYW55KS5fcXdpa0V2Py5yb290cykpOwogICAgY29uc3QgYnV0dG9uID0gcGFnZS5sb2NhdG9yKCcjJyArIGZpeHR1cmUuYnV0dG9uKTsKICAgIGlmIChmaXh0dXJlLnJlcXVlc3QpIHsKICAgICAgYXdhaXQgYnV0dG9uLmV2YWx1YXRlKChub2RlOiBIVE1MQnV0dG9uRWxlbWVudCkgPT4gbm9kZS5mb3JtIS5yZXF1ZXN0U3VibWl0KG5vZGUpKTsKICAgIH0gZWxzZSB7CiAgICAgIGF3YWl0IGJ1dHRvbi5jbGljaygpOwogICAgfQogICAgYXdhaXQgZXhwZWN0LnBvbGwoKCkgPT4gbmV3IFVSTChwYWdlLnVybCgpKS5zZWFyY2hQYXJhbXMuZ2V0KCdxJykpLnRvQmUoJ3JlbGVhc2UnKTsKICAgIGF3YWl0IGV4cGVjdChwYWdlLmxvY2F0b3IoJyNzaG93bicpKS50b0NvbnRhaW5UZXh0KCdxPXJlbGVhc2U7c2NvcGU9Jyk7CiAgICBhd2FpdCBleHBlY3QocGFnZS5sb2NhdG9yKCcjbmF2aWdhdGluZycpKS50b0hhdmVUZXh0KCdmYWxzZScpOwogICAgY29uc3QgdXJsID0gbmV3IFVSTChwYWdlLnVybCgpKTsKICAgIGNvbnN0IGFjdHVhbCA9IHsKICAgICAgcTogdXJsLnNlYXJjaFBhcmFtcy5nZXQoJ3EnKSwKICAgICAgc2NvcGU6IHVybC5zZWFyY2hQYXJhbXMuZ2V0KCdzY29wZScpID8/ICcnLAogICAgICB0YWdzOiB1cmwuc2VhcmNoUGFyYW1zLmdldEFsbCgndGFnJyksCiAgICAgIHNob3duOiBhd2FpdCBwYWdlLmxvY2F0b3IoJyNzaG93bicpLnRleHRDb250ZW50KCksCiAgICAgIHJlcG9ydHM6IGF3YWl0IHBhZ2UubG9jYXRvcignI3JlcG9ydHMgbGknKS5hbGxUZXh0Q29udGVudHMoKSwKICAgIH07CiAgICBjb25zb2xlLmxvZygnVUk1MF9OQVRJVkVfT1VUUFVUICcgKyBKU09OLnN0cmluZ2lmeSh7IG5hbWU6IGZpeHR1cmUubmFtZSwgYWN0dWFsIH0pKTsKICAgIGV4cGVjdChhY3R1YWwpLnRvRXF1YWwoewogICAgICBxOiAncmVsZWFzZScsCiAgICAgIHNjb3BlOiBmaXh0dXJlLnNjb3BlLAogICAgICB0YWdzOiBbJ2EnLCAnYiddLAogICAgICBzaG93bjogYHE9cmVsZWFzZTtzY29wZT0ke2ZpeHR1cmUuc2NvcGV9YCwKICAgICAgcmVwb3J0czogZml4dHVyZS5zY29wZSA9PT0gJ29wZW4nID8gWydSZWxlYXNlIGNoZWNrbGlzdCddIDogWydSZWxlYXNlIGNoZWNrbGlzdCcsICdBcmNoaXZlZCByZWxlYXNlIG5vdGVzJ10sCiAgICB9KTsKICB9KTsKfQo=')
+          assert hashlib.sha256(data).hexdigest()=='f6d5e2eb029b5b58127f9ff33e795f8be7aab3f7d0c2c73944c1a2f052b5b976'
+          path.write_bytes(data)
+          Path('/tmp/ui50-guard.py').write_text("import hashlib,json,os,subprocess,sys\nfrom pathlib import Path\nexpected = {'e2e/qwik-e2e/apps/qwikrouter-test/src/routes/ui50-get-submit/index.tsx': '9811aba15481a40b8777c8b6c180a80d01c7fa4036c9c37aefd4614de88e4294', 'e2e/qwik-e2e/tests/qwikrouter/ui50-get-submit.e2e.ts': 'f6d5e2eb029b5b58127f9ff33e795f8be7aab3f7d0c2c73944c1a2f052b5b976'}\npin = 'd7ec29baab92f77c552322603724f7b960b11e5a'\nassert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==pin\nsubprocess.run(['git','diff','HEAD','--exit-code'],check=True)\npaths = subprocess.check_output(['git','ls-files','-z']).split(b'\\0')[:-1]\nmanifest=[]\nfor raw in paths:\n path=os.fsdecode(raw); f=Path(path)\n data=os.readlink(f).encode() if f.is_symlink() else f.read_bytes()\n manifest.append([path,hashlib.sha256(data).hexdigest(),f.lstat().st_mode])\nrecord=Path('/tmp/ui50-tracked.json')\nif sys.argv[1]=='before': record.write_text(json.dumps(manifest))\nelse: assert json.loads(record.read_text())==manifest, 'whole tracked source changed'\nfor path,digest in expected.items():\n assert hashlib.sha256(Path(path).read_bytes()).hexdigest()==digest, 'fixture changed: '+path\nprint('UI50_INTEGRITY',sys.argv[1],len(manifest),hashlib.sha256(json.dumps(manifest).encode()).hexdigest(),json.dumps(expected))\n")
+          PY_ASSETS
+          python3 /tmp/ui50-guard.py before
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 24.15.0
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271
+        with:
+          version: 11.22.0
+          package_json_file: upstream/package.json
+          run_install: false
+      - name: Verify official tools and frozen lock
+        run: |
+          test "$(node --version)" = v24.15.0
+          test "$(pnpm --version)" = 11.22.0
+          echo 'd1027e009f4d6735cb4ff3f7b5d3f2d864271e39082d1f3e240c66aef669bbb9  pnpm-lock.yaml' | sha256sum -c -
+          pnpm install --frozen-lockfile
+          test "$(pnpm exec playwright --version)" = 'Version 1.61.1'
+      - name: Build actual framework and install official Chromium
+        run: |
+          pnpm dlx @intellectronica/ruler@0.3.42 apply --no-gitignore --no-mcp
+          pnpm build.core.dev
+          pnpm exec playwright install --with-deps chromium
+      - name: Execute finite native UI fixtures and require exact BEFORE result pattern
+        run: |
+          set +e
+          PLAYWRIGHT_JSON_OUTPUT_FILE=/tmp/ui50-playwright.json pnpm exec playwright test e2e/qwik-e2e/tests/qwikrouter/ui50-get-submit.e2e.ts --browser=chromium --config e2e/qwik-e2e/playwright.config.ts --workers=1 --retries=0 --timeout=180000 --reporter=line,json
+          status=$?
+          set -e
+          export UI50_EXIT_STATUS="$status"
+          python3 - <<'PY_RESULT'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('/tmp/ui50-playwright.json').read_text())
+          found={}
+          observed={}
+          def visit(s):
+           for spec in s.get('specs',[]):
+            results=spec['tests'][0]['results']
+            assert len(results)==1
+            found[spec['title']]=results[0]['status']
+            for out in results[0].get('stdout',[]):
+             if 'text' in out:
+              print(out['text'],end='')
+              for line in out['text'].splitlines():
+               if line.startswith('UI50_NATIVE_OUTPUT '):
+                item=json.loads(line[len('UI50_NATIVE_OUTPUT '):]); observed[item['name']]=item['actual']
+           for child in s.get('suites',[]):visit(child)
+          visit(r)
+          expected={
+           'control native named click':'passed',
+           'control native named requestSubmit':'passed',
+           'bug enhanced named click':'failed',
+           'bug enhanced named requestSubmit':'failed',
+           'control enhanced unnamed click':'passed',
+           'control enhanced hidden scope':'passed',
+          }
+          print('UI50_NATIVE_RESULTS',json.dumps(found,sort_keys=True))
+          assert os.environ['UI50_EXIT_STATUS']=='1'
+          assert found==expected, 'unexpected failure pattern; this is not reproduction proof'
+          assert set(observed)==set(expected)
+          for name,actual in observed.items():
+           scope='open' if name.startswith('control native') or name=='control enhanced hidden scope' else ''
+           assert actual=={
+            'q':'release','scope':scope,'tags':['a','b'],
+            'shown':f'q=release;scope={scope}',
+            'reports':['Release checklist'] if scope else ['Release checklist','Archived release notes'],
+           }, (name,actual)
+          assert not r.get('errors'),r.get('errors')
+          PY_RESULT
+      - name: Verify whole tracked upstream and fixture integrity after all work
+        if: always()
+        run: python3 /tmp/ui50-guard.py after
